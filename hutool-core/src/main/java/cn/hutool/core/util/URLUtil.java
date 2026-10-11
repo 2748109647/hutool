@@ -574,6 +574,33 @@ public class URLUtil extends URLEncodeUtil {
 	}
 
 	/**
+	 * 从URL中获取JarFile，可控制是否使用URL连接缓存。
+	 *
+	 * <ul>
+	 *     <li>当 {@code useCaches} 为 {@code false} 时，返回一个不与其他连接共享的独立 JarFile 实例，
+	 *         由调用方负责关闭。</li>
+	 *     <li>当 {@code useCaches} 为 {@code true} 时，可能返回 URL 连接缓存中的共享实例，
+	 *         调用方不应关闭该实例，否则会影响其他持有者。</li>
+	 * </ul>
+	 *
+	 * @param url       URL
+	 * @param useCaches 是否使用URL连接缓存
+	 * @return JarFile
+	 * @since 5.8.49
+	 */
+	public static JarFile getJarFile(URL url, boolean useCaches) {
+		try {
+			JarURLConnection urlConnection = (JarURLConnection) url.openConnection();
+			if (false == useCaches) {
+				urlConnection.setUseCaches(false);
+			}
+			return urlConnection.getJarFile();
+		} catch (IOException e) {
+			throw new IORuntimeException(e);
+		}
+	}
+
+	/**
 	 * 标准化URL字符串，包括：
 	 *
 	 * <ol>
