@@ -298,6 +298,27 @@ public class Base85Test {
 		);
 	}
 
+	@Test
+	public void decodeOverflowGroupThrowsTest() {
+		// "uuuuu" = 85^5 - 1 = 4437053124，超出32位无符号整数范围，不应被截断为错误字节
+		assertThrows(IllegalArgumentException.class, () -> Base85.decode("uuuuu"));
+		assertThrows(IllegalArgumentException.class, () -> Base85.decodeZ85("#####"));
+		// 尾部不完整块补齐后同样溢出
+		assertThrows(IllegalArgumentException.class, () -> Base85.decode("uu"));
+	}
+
+	@Test
+	public void decodeMaxGroupTest() {
+		// 0xFFFFFFFF 是单个分组能表示的最大值，必须能正常往返
+		final byte[] max = {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+		assertEquals("s8W-!", Base85.encode(max));
+		assertArrayEquals(max, Base85.decode("s8W-!"));
+		assertArrayEquals(max, Base85.decodeZ85(Base85.encodeZ85(max)));
+		// 尾部为 0xFF 的不完整块补齐后不会溢出
+		final byte[] tail = {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+		assertArrayEquals(tail, Base85.decode(Base85.encode(tail)));
+	}
+
 	// ==================== 两种模式结果不同 ====================
 
 	@Test

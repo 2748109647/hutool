@@ -240,7 +240,7 @@ public class Base85Codec implements Encoder<byte[], byte[]>, Decoder<byte[], byt
 				count++;
 
 				if (count == ENCODED_CHUNK_SIZE) {
-					writeDecodedTuple(out, tuple, CHUNK_SIZE);
+					writeDecodedTuple(out, checkTuple(tuple), CHUNK_SIZE);
 					tuple = 0;
 					count = 0;
 				}
@@ -257,10 +257,25 @@ public class Base85Codec implements Encoder<byte[], byte[]>, Decoder<byte[], byt
 					tuple = tuple * 85 + 84;
 				}
 				// 尾部有效原始字节数 = count - 1
-				writeDecodedTuple(out, tuple, count - 1);
+				writeDecodedTuple(out, checkTuple(tuple), count - 1);
 			}
 
 			return out.toByteArray();
+		}
+
+		/**
+		 * 检查解码后的分组值是否在32位无符号整数范围内<br>
+		 * 5个Base85字符最大可表示 85^5-1，超过 0xFFFFFFFF 的值不是合法编码，截断会得到错误的字节
+		 *
+		 * @param tuple 解码后的值
+		 * @return 原值
+		 * @throws IllegalArgumentException 超出32位范围
+		 */
+		private static long checkTuple(long tuple) {
+			if (tuple > 0xFFFFFFFFL) {
+				throw new IllegalArgumentException("Invalid Base85 encoding: group value " + tuple + " exceeds 32 bits");
+			}
+			return tuple;
 		}
 
 		/**
