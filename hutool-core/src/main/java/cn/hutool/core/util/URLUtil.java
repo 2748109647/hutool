@@ -558,22 +558,6 @@ public class URLUtil extends URLEncodeUtil {
 	}
 
 	/**
-	 * 从URL中获取JarFile
-	 *
-	 * @param url URL
-	 * @return JarFile
-	 * @since 4.1.5
-	 */
-	public static JarFile getJarFile(URL url) {
-		try {
-			JarURLConnection urlConnection = (JarURLConnection) url.openConnection();
-			return urlConnection.getJarFile();
-		} catch (IOException e) {
-			throw new IORuntimeException(e);
-		}
-	}
-
-	/**
 	 * 从URL中获取JarFile，可控制是否使用URL连接缓存。
 	 *
 	 * <ul>
@@ -591,13 +575,25 @@ public class URLUtil extends URLEncodeUtil {
 	public static JarFile getJarFile(URL url, boolean useCaches) {
 		try {
 			JarURLConnection urlConnection = (JarURLConnection) url.openConnection();
-			if (false == useCaches) {
+			if (!useCaches) {
 				urlConnection.setUseCaches(false);
 			}
 			return urlConnection.getJarFile();
 		} catch (IOException e) {
 			throw new IORuntimeException(e);
 		}
+	}
+
+	/**
+	 * 从URL中获取JarFile，可能返回 URL 连接缓存中的共享实例<br>
+	 * 调用方不应关闭该实例，否则会影响其他持有者
+	 *
+	 * @param url URL
+	 * @return JarFile
+	 * @since 4.1.5
+	 */
+	public static JarFile getJarFile(URL url) {
+		return getJarFile(url, true);
 	}
 
 	/**
