@@ -5,6 +5,8 @@
 # 5.8.49(2026-10-12)
 ### 🐣新特性
 * 【core   】      `URLUtil.getJarFile`增加可选使用缓存的版本（pr#4340@Github）
+* 【core   】      `Base85`decode时增加越界检查（pr#4342@Github）
+
 ### 🐞Bug修复
 * 【core   】      修复`ClassScanner`扫描jar后关闭共享JarFile导致`Zip file closed`的问题（pr#4340@Github）
 
