@@ -290,6 +290,7 @@ public class Base85Codec implements Encoder<byte[], byte[]>, Decoder<byte[], byt
 		 * @param byteCount 需要写入的有效字节数
 		 */
 		private static void writeDecodedTuple(final ByteArrayOutputStream out, final long tuple, final int byteCount) {
+			checkTuple(tuple);
 			for (int i = CHUNK_SIZE - 1; i >= CHUNK_SIZE - byteCount; i--) {
 				out.write((int) ((tuple >> (i * 8)) & 0xFF));
 			}
@@ -303,6 +304,21 @@ public class Base85Codec implements Encoder<byte[], byte[]>, Decoder<byte[], byt
 		 */
 		private static int estimateDecodedLength(final int encodedLength) {
 			return (int) Math.ceil(encodedLength * CHUNK_SIZE / (double) ENCODED_CHUNK_SIZE);
+		}
+
+		/**
+		 * 检查解码后的分组值是否在32位无符号整数范围内<br>
+		 * 5个Base85字符最大可表示 85^5-1，超过 0xFFFFFFFF 的值不是合法编码，截断会得到错误的字节
+		 *
+		 * @param tuple 解码后的值
+		 * @return 原值
+		 * @throws IllegalArgumentException 超出32位范围
+		 */
+		private static long checkTuple(final long tuple) {
+			if (tuple > 0xFFFFFFFFL) {
+				throw new IllegalArgumentException("Invalid Base85 encoding: group value " + tuple + " exceeds 32 bits");
+			}
+			return tuple;
 		}
 	}
 }
