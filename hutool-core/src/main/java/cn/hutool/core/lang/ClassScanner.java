@@ -263,7 +263,8 @@ public class ClassScanner implements Serializable {
 					scanFile(new File(URLUtil.decode(url.getFile(), this.charset.name())), null);
 					break;
 				case "jar":
-					scanJar(URLUtil.getJarFile(url));
+					// 不使用缓存，避免关闭共享的JarFile（issue#4339@Github）
+					scanJar(URLUtil.getJarFile(url, false));
 					break;
 			}
 		}
