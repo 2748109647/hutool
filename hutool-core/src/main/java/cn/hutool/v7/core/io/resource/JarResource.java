@@ -18,14 +18,10 @@ package cn.hutool.v7.core.io.resource;
 
 import cn.hutool.v7.core.compress.ZipUtil;
 import cn.hutool.v7.core.io.IORuntimeException;
-import cn.hutool.v7.core.net.url.UrlUtil;
 
-import java.io.IOException;
 import java.io.Serial;
-import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.jar.JarFile;
 
 /**
@@ -88,42 +84,6 @@ public class JarResource extends UrlResource {
 	 * @since 7.0.0
 	 */
 	public JarFile getJarFile(final boolean useCaches) throws IORuntimeException {
-		try {
-			return doGetJarFile(useCaches);
-		} catch (final IOException e) {
-			throw new IORuntimeException(e);
-		}
-	}
-
-	/**
-	 * 获取{@link JarFile}<br>
-	 * 首席按通过openConnection方式获取，如果得到的不是{@link JarURLConnection}，<br>
-	 * 则尝试去除WAR、JAR等协议分隔符，裁剪分隔符前段来直接获取{@link JarFile}。
-	 *
-	 * @param useCaches 是否使用URL连接缓存；为{@code false}时会在获取JarFile前
-	 *                  设置{@code JarURLConnection#setUseCaches(false)}，
-	 *                  从而返回一个独立的、不放入缓存的JarFile实例
-	 * @return {@link JarFile}
-	 * @throws IOException IO异常
-	 */
-	private JarFile doGetJarFile(final boolean useCaches) throws IOException {
-		final URLConnection con = getUrl().openConnection();
-		if (con instanceof final JarURLConnection jarCon) {
-			if (!useCaches) {
-				jarCon.setUseCaches(false);
-			}
-			return jarCon.getJarFile();
-		} else {
-			final String urlFile = getUrl().getFile();
-			int separatorIndex = urlFile.indexOf(UrlUtil.WAR_URL_SEPARATOR);
-			if (separatorIndex == -1) {
-				separatorIndex = urlFile.indexOf(UrlUtil.JAR_URL_SEPARATOR);
-			}
-			if (separatorIndex != -1) {
-				return ZipUtil.ofJar(urlFile.substring(0, separatorIndex));
-			} else {
-				return new JarFile(urlFile);
-			}
-		}
+		return ZipUtil.ofJar(getUrl(), useCaches);
 	}
 }

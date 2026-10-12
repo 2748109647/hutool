@@ -35,10 +35,13 @@ import cn.hutool.v7.core.util.ByteUtil;
 import cn.hutool.v7.core.util.CharsetUtil;
 
 import java.io.*;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
 import java.nio.file.*;
+import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -69,15 +72,15 @@ public class ZipUtil {
 	 * @return {@link ZipFile}
 	 */
 	public static ZipFile toZipFile(final File file, Charset charset) {
-		if(null == charset){
+		if (null == charset) {
 			charset = CharsetUtil.UTF_8;
 		}
 		try {
 			return new ZipFile(file, charset);
 		} catch (final IOException e) {
 			// issue#I3UZ28 可能编码错误提示
-			if(e instanceof ZipException){
-				if(e.getMessage().contains("invalid CEN header")){
+			if (e instanceof ZipException) {
+				if (e.getMessage().contains("invalid CEN header")) {
 					try {
 						// 尝试使用不同编码
 						return new ZipFile(file, CharsetUtil.UTF_8.equals(charset) ? CharsetUtil.GBK : CharsetUtil.UTF_8);
@@ -152,6 +155,7 @@ public class ZipUtil {
 	}
 
 	// region ----- zip
+
 	/**
 	 * 打包到当前目录，使用默认编码UTF-8
 	 *
@@ -573,7 +577,7 @@ public class ZipUtil {
 	public static File unzip(final ZipFile zipFile, final File outFile, final long limit) throws IORuntimeException {
 		if (outFile.exists() && outFile.isFile()) {
 			throw new IllegalArgumentException(
-					StrUtil.format("Target path [{}] exist!", outFile.getAbsolutePath()));
+				StrUtil.format("Target path [{}] exist!", outFile.getAbsolutePath()));
 		}
 
 		// pr#726@Gitee
@@ -1039,18 +1043,56 @@ public class ZipUtil {
 	 * @throws IORuntimeException IO异常
 	 * @since 7.0.0
 	 */
-	public static JarFile ofJar(String jarFileUrl) throws IORuntimeException{
+	public static JarFile ofJar(String jarFileUrl) throws IORuntimeException {
 		Assert.notBlank(jarFileUrl, "Jar file url is blank!");
 
-		if(jarFileUrl.startsWith(UrlUtil.FILE_URL_PREFIX)){
-			try{
+		if (jarFileUrl.startsWith(UrlUtil.FILE_URL_PREFIX)) {
+			try {
 				jarFileUrl = UrlUtil.toURI(jarFileUrl).getSchemeSpecificPart();
-			} catch (final HutoolException e){
+			} catch (final HutoolException e) {
 				jarFileUrl = jarFileUrl.substring(UrlUtil.FILE_URL_PREFIX.length());
 			}
 		}
 		try {
 			return new JarFile(jarFileUrl);
+		} catch (final IOException e) {
+			throw new IORuntimeException(e);
+		}
+	}
+
+	/**
+	 * 获取{@link JarFile}<br>
+	 * 首先按通过openConnection方式获取，如果得到的不是{@link JarURLConnection}，<br>
+	 * 则尝试去除WAR、JAR等协议分隔符，裁剪分隔符前段来直接获取{@link JarFile}。
+	 *
+	 * @param url jar对应的URL
+	 * @param useCaches 是否使用URL连接缓存；为{@code false}时会在获取JarFile前
+	 *                  设置{@code JarURLConnection#setUseCaches(false)}，
+	 *                  从而返回一个独立的、不放入缓存的JarFile实例
+	 * @return {@link JarFile}
+	 * @throws IORuntimeException IO异常
+	 * @since 7.0.0
+	 */
+	public static JarFile ofJar(final URL url, final boolean useCaches) throws IORuntimeException {
+		try {
+			final URLConnection con = url.openConnection();
+			if (con instanceof final JarURLConnection jarCon) {
+				if (!useCaches) {
+					jarCon.setUseCaches(false);
+				}
+				return jarCon.getJarFile();
+			} else {
+				final String urlFile = url.getFile();
+				int separatorIndex = urlFile.indexOf(UrlUtil.WAR_URL_SEPARATOR);
+				if (separatorIndex == -1) {
+					separatorIndex = urlFile.indexOf(UrlUtil.JAR_URL_SEPARATOR);
+				}
+				if (separatorIndex != -1) {
+					return ofJar(urlFile.substring(0, separatorIndex));
+				} else {
+					return new JarFile(urlFile);
+				}
+			}
 		} catch (final IOException e) {
 			throw new IORuntimeException(e);
 		}
