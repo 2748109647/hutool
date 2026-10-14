@@ -16,22 +16,33 @@ public class MetroHashTest {
 
 	@Test
 	public void testEmpty() {
-		assertEquals("31290877cceaea29", HexUtil.toHex(MetroHash.hash64(StrUtil.utf8Bytes(""), 0)));
+		assertEquals("705fb008071e967d", HexUtil.toHex(MetroHash.hash64(StrUtil.utf8Bytes(""), 0)));
 	}
 
 	@Test
 	public void metroHash64Test() {
 		byte[] str = "我是一段测试123".getBytes(CharsetUtil.CHARSET_UTF_8);
 		final long hash64 = MetroHash.hash64(str);
-		assertEquals(62920234463891865L, hash64);
+		assertEquals(-3101721905795170633L, hash64);
 	}
 
 	@Test
 	public void metroHash128Test() {
 		byte[] str = "我是一段测试123".getBytes(CharsetUtil.CHARSET_UTF_8);
 		final long[] hash128 = MetroHash.hash128(str).getLongArray();
-		assertEquals(4956592424592439349L, hash128[0]);
-		assertEquals(6301214698325086246L, hash128[1]);
+		assertEquals(1242802052940167246L, hash128[0]);
+		assertEquals(-8752050422215357227L, hash128[1]);
+	}
+
+	/**
+	 * 测试 hash64 对含 ≥ 0x80 字节的 4 字节尾块的解析（覆盖 littleEndian32）。
+	 *
+	 * <p>期望值取自 MetroHash 官方 go-metro 测试向量（seed = 4，输入 5a c7 bb 55）。</p>
+	 */
+	@Test
+	public void metroHash64LittleEndian32Test() {
+		final byte[] data = {0x5a, (byte) 0xc7, (byte) 0xbb, 0x55};
+		assertEquals(0xb041ec8e8c9e31b9L, MetroHash.hash64(data, 4));
 	}
 
 	/**
