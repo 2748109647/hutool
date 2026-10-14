@@ -515,7 +515,7 @@ public enum FileMagicNumber {
 		@Override
 		public boolean match(final byte[] bytes) {
 			return bytes.length > 2
-					&& (Objects.equals(bytes[0], 0x43) || Objects.equals(bytes[0], (byte) 0x46))
+					&& (Objects.equals(bytes[0],(byte) 0x43) || Objects.equals(bytes[0], (byte) 0x46))
 					&& Objects.equals(bytes[1], (byte) 0x57)
 					&& Objects.equals(bytes[2], (byte) 0x53);
 		}
