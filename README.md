@@ -169,7 +169,7 @@ Hutool的源码分为两个分支，功能如下：
 
 ### 🐞提供bug反馈或建议
 
-提交问题反馈请说明正在使用的JDK版本呢、Hutool版本和相关依赖库版本。
+提交问题反馈请说明正在使用的 JDK 版本、Hutool 版本和相关依赖库版本。
 
 - [Gitee issue](https://gitee.com/chinabugotech/hutool/issues)
 - [Github issue](https://github.com/chinabugotech/hutool/issues)
