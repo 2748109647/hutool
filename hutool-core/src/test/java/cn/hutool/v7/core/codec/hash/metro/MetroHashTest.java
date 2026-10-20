@@ -19,12 +19,14 @@ package cn.hutool.v7.core.codec.hash.metro;
 
 import cn.hutool.v7.core.codec.binary.HexUtil;
 import cn.hutool.v7.core.codec.hash.CityHash;
+import cn.hutool.v7.core.codec.hash.HashUtil;
 import cn.hutool.v7.core.util.ByteUtil;
 import cn.hutool.v7.core.util.CharsetUtil;
 import cn.hutool.v7.core.util.RandomUtil;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * https://gitee.com/chinabugotech/hutool/pulls/532
@@ -33,24 +35,24 @@ public class MetroHashTest {
 
 	@Test
 	public void testEmpty() {
-		Assertions.assertEquals("705fb008071e967d", HexUtil.toHex(MetroHash64.of(0).hash64(ByteUtil.toUtf8Bytes(""))));
+		assertEquals("705fb008071e967d", HexUtil.toHex(MetroHash64.of(0).hash64(ByteUtil.toUtf8Bytes(""))));
 	}
 
 	@Test
 	public void test1Low() {
-		Assertions.assertEquals("AF6F242B7ED32BCB", h64("a"));
+		assertEquals("AF6F242B7ED32BCB", h64("a"));
 	}
 
 	@Test
 	public void test1High() {
-		Assertions.assertEquals("D51BA21D219C37B3", h64("é"));
+		assertEquals("D51BA21D219C37B3", h64("é"));
 	}
 
 	@Test
 	public void metroHash64Test() {
 		final byte[] str = "我是一段测试123".getBytes(CharsetUtil.UTF_8);
 		final long hash64 = MetroHash64.of(0).hash64(str);
-		Assertions.assertEquals(147395857347476456L, hash64);
+		assertEquals(147395857347476456L, hash64);
 	}
 
 	/**
@@ -112,5 +114,16 @@ public class MetroHashTest {
 
 	private String h64(final String value) {
 		return HexUtil.toHex(MetroHash64.of(0).hash64(ByteUtil.toUtf8Bytes(value))).toUpperCase();
+	}
+
+	/**
+	 * 测试 hash64 对含 ≥ 0x80 字节的 4 字节尾块的解析（覆盖 littleEndian32）。
+	 *
+	 * <p>期望值取自 MetroHash 官方 go-metro 测试向量（seed = 4，输入 5a c7 bb 55）。</p>
+	 */
+	@Test
+	public void metroHash64LittleEndian32Test() {
+		final byte[] data = {0x5a, (byte) 0xc7, (byte) 0xbb, 0x55};
+		assertEquals(0xb041ec8e8c9e31b9L, HashUtil.metroHash64(data, 4));
 	}
 }
