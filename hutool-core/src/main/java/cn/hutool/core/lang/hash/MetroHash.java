@@ -20,18 +20,18 @@ public class MetroHash {
 	/**
 	 * hash64 种子加盐
 	 */
-	private final static long k0_64 = 0xD6D018F5;
-	private final static long k1_64 = 0xA2AA033B;
-	private final static long k2_64 = 0x62992FC1;
-	private final static long k3_64 = 0x30BC5B29;
+	private final static long k0_64 = 0xD6D018F5L;
+	private final static long k1_64 = 0xA2AA033BL;
+	private final static long k2_64 = 0x62992FC1L;
+	private final static long k3_64 = 0x30BC5B29L;
 
 	/**
 	 * hash128 种子加盐
 	 */
-	private final static long k0_128 = 0xC83A91E1;
-	private final static long k1_128 = 0x8648DBDB;
-	private final static long k2_128 = 0x7BDEC03B;
-	private final static long k3_128 = 0x2F5870A5;
+	private final static long k0_128 = 0xC83A91E1L;
+	private final static long k1_128 = 0x8648DBDBL;
+	private final static long k2_128 = 0x7BDEC03BL;
+	private final static long k3_128 = 0x2F5870A5L;
 
 	public static long hash64(byte[] data) {
 		return hash64(data, 1337);
@@ -58,9 +58,9 @@ public class MetroHash {
 				v0 = rotateLeft64(v0, -29) + v2;
 				v1 += littleEndian64(buffer, 8) * k1_64;
 				v1 = rotateLeft64(v1, -29) + v3;
-				v2 += littleEndian64(buffer, 24) * k2_64;
+				v2 += littleEndian64(buffer, 16) * k2_64;
 				v2 = rotateLeft64(v2, -29) + v0;
-				v3 += littleEndian64(buffer, 32) * k3_64;
+				v3 += littleEndian64(buffer, 24) * k3_64;
 				v3 = rotateLeft64(v3, -29) + v1;
 				buffer = Arrays.copyOfRange(buffer, 32, buffer.length);
 			}
@@ -90,20 +90,20 @@ public class MetroHash {
 		}
 
 		if (buffer.length >= 4) {
-			hash += (long) littleEndian32(Arrays.copyOfRange(buffer, 0, 4)) * k3_64;
+			hash += (littleEndian32(Arrays.copyOfRange(buffer, 0, 4)) & 0xFFFFFFFFL) * k3_64;
 			hash ^= rotateLeft64(hash, -26) * k1_64;
 			buffer = Arrays.copyOfRange(buffer, 4, buffer.length);
 		}
 
 		if (buffer.length >= 2) {
-			hash += (long) littleEndian16(Arrays.copyOfRange(buffer, 0, 2)) * k3_64;
+			hash += (littleEndian16(Arrays.copyOfRange(buffer, 0, 2)) & 0xFFFFL) * k3_64;
 			buffer = Arrays.copyOfRange(buffer, 2, buffer.length);
 			hash ^= rotateLeft64(hash, -48) * k1_64;
 		}
 
 		if (buffer.length >= 1) {
-			hash += (long) buffer[0] * k3_64;
-			hash ^= rotateLeft64(hash, -38) * k1_64;
+			hash += (buffer[0] & 0xFFL) * k3_64;
+			hash ^= rotateLeft64(hash, -37) * k1_64;
 		}
 
 		hash ^= rotateLeft64(hash, -28);
@@ -135,7 +135,7 @@ public class MetroHash {
 				v2 += littleEndian64(buffer, 0) * k2_128;
 				buffer = Arrays.copyOfRange(buffer, 8, buffer.length);
 				v2 = rotateRight(v2, 29) + v0;
-				v3 = littleEndian64(buffer, 0) * k3_128;
+				v3 += littleEndian64(buffer, 0) * k3_128;
 				buffer = Arrays.copyOfRange(buffer, 8, buffer.length);
 				v3 = rotateRight(v3, 29) + v1;
 			}
@@ -153,8 +153,8 @@ public class MetroHash {
 			v1 += littleEndian64(buffer, 0) * k2_128;
 			buffer = Arrays.copyOfRange(buffer, 8, buffer.length);
 			v1 = rotateRight(v1, 33) * k3_128;
-			v0 ^= rotateRight((v0 * k2_128) + v1, 45) + k1_128;
-			v1 ^= rotateRight((v1 * k3_128) + v0, 45) + k0_128;
+			v0 ^= rotateRight((v0 * k2_128) + v1, 45) * k1_128;
+			v1 ^= rotateRight((v1 * k3_128) + v0, 45) * k0_128;
 		}
 
 		if (buffer.length >= 8) {
@@ -165,21 +165,21 @@ public class MetroHash {
 		}
 
 		if (buffer.length >= 4) {
-			v1 += (long) littleEndian32(buffer) * k2_128;
+			v1 += (littleEndian32(buffer) & 0xFFFFFFFFL) * k2_128;
 			buffer = Arrays.copyOfRange(buffer, 4, buffer.length);
 			v1 = rotateRight(v1, 33) * k3_128;
 			v1 ^= rotateRight((v1 * k3_128) + v0, 46) * k0_128;
 		}
 
 		if (buffer.length >= 2) {
-			v0 += (long) littleEndian16(buffer) * k2_128;
+			v0 += (littleEndian16(buffer) & 0xFFFFL) * k2_128;
 			buffer = Arrays.copyOfRange(buffer, 2, buffer.length);
 			v0 = rotateRight(v0, 33) * k3_128;
-			v0 ^= rotateRight((v0 * k2_128) * v1, 22) * k1_128;
+			v0 ^= rotateRight((v0 * k2_128) + v1, 22) * k1_128;
 		}
 
 		if (buffer.length >= 1) {
-			v1 += (long) buffer[0] * k2_128;
+			v1 += (buffer[0] & 0xFFL) * k2_128;
 			v1 = rotateRight(v1, 33) * k3_128;
 			v1 ^= rotateRight((v1 * k3_128) + v0, 58) * k0_128;
 		}
@@ -198,7 +198,7 @@ public class MetroHash {
 	}
 
 	private static int littleEndian32(byte[] b) {
-		return (int) b[0] | (int) b[1] << 8 | (int) b[2] << 16 | (int) b[3] << 24;
+		return (b[0] & 0xFF) | ((b[1] & 0xFF) << 8) | ((b[2] & 0xFF) << 16) | ((b[3] & 0xFF) << 24);
 	}
 
 	private static int littleEndian16(byte[] b) {
@@ -208,10 +208,10 @@ public class MetroHash {
 	private static long rotateLeft64(long x, int k) {
 		int n = 64;
 		int s = k & (n - 1);
-		return x << s | x >> (n - s);
+		return x << s | x >>> (n - s);
 	}
 
 	private static long rotateRight(long val, int shift) {
-		return (val >> shift) | (val << (64 - shift));
+		return (val >>> shift) | (val << (64 - shift));
 	}
 }
