@@ -35,7 +35,7 @@
 这些封装的工具涵盖了字符串、数字、集合、编码、日期、文件、IO、加密、数据库JDBC、JSON、HTTP客户端等一系列操作，
 可以满足各种不同的开发需求。
 
-### 🎁Hutool往事
+### 🎁`Hutool`往事
 
 - 2012年，一个刚刚步入职场的少年剥离了业务系统中的公共部分，取名叫做`Common-Tools`。
 - 2014年，他离开热爱的互联网和IT行业，将这份热爱倾注于开源，并将项目更名为`Hutool`，
@@ -43,7 +43,7 @@
 - 现在，“他”变成“他们”——一群热心的Committer。而`Hutool`,数十年如一日，已成为众多Java开发者互助的桥梁。
 - 将来，Make Java Sweet Again!
 
-### 🍺Hutool理念
+### 🍺`Hutool`理念
 
 `Hutool`既是一个工具集，也是一个知识库，我们从不自诩代码原创，大多数工具类都是**搬运**而来，因此：
 
@@ -99,7 +99,7 @@ Hutool目前主要版本4.x、5.x、6.x、7.x，选择如下：
 
 ### 🍊Maven
 
-在项目的pom.xml的dependencies中加入以下内容:
+在项目的`pom.xml`的`dependencies`中加入以下内容:
 
 ```xml
 
@@ -123,12 +123,12 @@ implementation 'cn.hutool.v7:hutool-all:7.0.0-M9'
 - [Maven中央库](https://repo1.maven.org/maven2/cn/hutool/v7/hutool-all/7.0.0-M9/)
 
 > 🔔️注意
-> Hutool 7.x支持JDK17，对Android平台没有测试，不能保证所有工具类或工具方法可用。
+> `Hutool` 7.x支持JDK17，对Android平台没有测试，不能保证所有工具类或工具方法可用。
 
 ### 🚽编译安装
 
-访问Hutool的Gitee主页：[https://gitee.com/chinabugotech/hutool](https://gitee.com/chinabugotech/hutool)
-下载整个项目源码（v6-master或v6-dev分支都可）然后进入Hutool项目目录执行：
+访问`Hutool`的`Gitee`主页：[https://gitee.com/chinabugotech/hutool](https://gitee.com/chinabugotech/hutool)
+下载整个项目源码（`v7-master`或`v7-dev`分支都可）然后进入`Hutool`项目目录执行：
 
 ```sh
 ./hutool.sh install
@@ -151,7 +151,7 @@ Hutool的源码分为两个分支，功能如下：
 
 ### 🐞提供bug反馈或建议
 
-提交问题反馈请说明正在使用的JDK版本呢、Hutool版本和相关依赖库版本。
+提交问题反馈请说明正在使用的`JDK`版本、`Hutool`版本和相关依赖库版本。
 
 - [Gitee   issue](https://gitee.com/chinabugotech/hutool/issues)
 - [Github  issue](https://github.com/chinabugotech/hutool/issues)
@@ -159,20 +159,20 @@ Hutool的源码分为两个分支，功能如下：
 
 ### 🧬贡献代码的步骤
 
-1. 在Gitee、Github或Gitcode上fork项目到自己的repo
+1. 在`Gitee`、`Github`或`Gitcode`上fork项目到自己的repo
 2. 把fork过去的项目也就是你的项目clone到你的本地
-3. 修改代码（记得一定要修改v7-dev分支）
-4. commit后push到自己的库（v7-dev分支）
-5. 登录Gitee、Github或Gitcode在你首页可以看到一个 pull request 按钮，点击它，填写一些说明信息，然后提交即可。
+3. 修改代码（记得一定要修改`v7-dev`分支）
+4. commit后push到自己的库（`v7-dev`分支）
+5. 登录`Gitee`、`Github`或`Gitcode`在你首页可以看到一个 `pull request` 按钮，点击它，填写一些说明信息，然后提交即可。
 6. 等待维护者合并
 
 ### 📐PR遵照的原则
 
-Hutool欢迎任何人为Hutool添砖加瓦，贡献代码，不过维护者是一个强迫症患者，为了照顾病人，需要提交的pr（pull request）符合一些规范，规范如下：
+`Hutool`欢迎任何人为`Hutool`添砖加瓦，贡献代码，不过维护者是一个强迫症患者，为了照顾病人，需要提交的pr（`pull request`）符合一些规范，规范如下：
 
 1. 注释完备，尤其每个新增的方法应按照Java文档规范标明方法说明、参数说明、返回值说明等信息，必要时请添加单元测试，如果愿意，也可以加上你的大名。
-2. Hutool的缩进按照Eclipse（~~不要跟我说IDEA多好用，维护者非常懒，学不会~~，IDEA真香，改了Eclipse快捷键后舒服多了）默认（tab）缩进，所以请遵守（不要和我争执空格与tab的问题，这是一个病人的习惯）。
-3. 新加的方法不要使用第三方库的方法，Hutool遵循无依赖原则（除非在extra模块中加方法工具）。
+2. `Hutool`的缩进按照`Eclipse`（~~不要跟我说IDEA多好用，维护者非常懒，学不会~~，IDEA真香，改了`Eclipse`快捷键后舒服多了）默认（tab）缩进，所以请遵守（不要和我争执空格与tab的问题，这是一个病人的习惯）。
+3. 新加的方法不要使用第三方库的方法，`Hutool`遵循无依赖原则（除非在extra模块中加方法工具）。
 4. 请pull request到`v7-dev`分支。Hutool在7.x版本后使用了新的分支：`v7-master`是主分支，表示已经发布中央库的版本，这个分支不允许pr，也不允许修改。
 
 ### 💞沟通说明
