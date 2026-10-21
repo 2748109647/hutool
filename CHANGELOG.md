@@ -10,6 +10,7 @@
 ### 🐞Bug修复
 * 【core   】      修复`ClassScanner`扫描jar后关闭共享JarFile导致`Zip file closed`的问题（pr#4340@Github）
 * 【core   】      修复`FileMagicNumber` SWF 魔数补齐 ZWS(LZMA 压缩) 签名（pr#1481@Gitee）
+* 【core   】      修复`Base32.decode`单字符输入抛出`ArrayIndexOutOfBoundsException`的问题（pr#4345@Github）
 
 -------------------------------------------------------------------------------------------------------------
 # 5.8.48(2026-09-26)
