@@ -514,8 +514,9 @@ public enum FileMagicNumber {
 	SWF("application/x-shockwave-flash", "swf") {
 		@Override
 		public boolean match(final byte[] bytes) {
+			// 0x43：CWS（zlib 压缩）、0x46：FWS（未压缩）、0x5a：ZWS（LZMA 压缩）
 			return bytes.length > 2
-					&& (Objects.equals(bytes[0],(byte) 0x43) || Objects.equals(bytes[0], (byte) 0x46))
+					&& (Objects.equals(bytes[0], (byte) 0x43) || Objects.equals(bytes[0], (byte) 0x46) || Objects.equals(bytes[0], (byte) 0x5a))
 					&& Objects.equals(bytes[1], (byte) 0x57)
 					&& Objects.equals(bytes[2], (byte) 0x53);
 		}
