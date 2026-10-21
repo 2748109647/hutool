@@ -229,15 +229,23 @@ public class Base32Codec implements Encoder<byte[], String>, Decoder<CharSequenc
 				if (index <= 3) {
 					index = (index + 5) % 8;
 					if (index == 0) {
-						bytes[offset] |= (byte) digit;
-						offset++;
+						// 输出缓冲区已满（例如单字符输入时 5bit 不足以组成一个字节），直接结束
 						if (offset >= bytes.length) {
 							break;
 						}
+						bytes[offset] |= (byte) digit;
+						offset++;
 					} else {
+						// 首个未满 8bit 的分组写入同样需要检查，否则单字符输入（输出缓冲区为 0 长度）会越界
+						if (offset >= bytes.length) {
+							break;
+						}
 						bytes[offset] |= (byte) (digit << (8 - index));
 					}
 				} else {
+					if (offset >= bytes.length) {
+						break;
+					}
 					index = (index + 5) % 8;
 					bytes[offset] |= (byte) (digit >>> index);
 					offset++;
