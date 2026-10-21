@@ -645,7 +645,7 @@ public enum FileMagicNumber {
 		@Override
 		public boolean match(final byte[] bytes) {
 			return bytes.length > 2
-				&& (Objects.equals(bytes[0], (byte) 0x43) || Objects.equals(bytes[0], (byte) 0x46))
+				&& (Objects.equals(bytes[0], (byte) 0x43) || Objects.equals(bytes[0], (byte) 0x46) || Objects.equals(bytes[0], (byte) 0x5a))
 				&& Objects.equals(bytes[1], (byte) 0x57)
 				&& Objects.equals(bytes[2], (byte) 0x53);
 		}
@@ -1396,7 +1396,7 @@ public enum FileMagicNumber {
 	 * @return {@code FileMagicNumber}
 	 */
 	public static FileMagicNumber getMagicNumber(final byte[] bytes) {
-		if(ObjUtil.isNull(bytes)){
+		if (ObjUtil.isNull(bytes)) {
 			return UNKNOWN;
 		}
 
